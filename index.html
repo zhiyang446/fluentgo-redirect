@@ -7,21 +7,23 @@
 <body>
   <p>Redirecting...</p>
   <script>
-    // Supabase 默认把参数放在 hash (#) 里
+    // Supabase 把参数放在 hash (#) 部分
     const hash = window.location.hash.substring(1); 
     const params = new URLSearchParams(hash);
 
-    const type = params.get("type");
-    const code = params.get("access_token") || params.get("code");
+    // 可能存在的参数
+    const type = params.get("type") || params.get("event");
+    const accessToken = params.get("access_token");
+    const code = params.get("code") || accessToken;
 
-    if (type === "signup") {
-      // 跳到 confirm-email.html 并把参数带过去
+    if (type === "signup" || type === "confirmation") {
+      // 跳转到 confirm-email.html
       window.location.href = `confirm-email.html?code=${encodeURIComponent(code)}`;
-    } else if (type === "recovery") {
-      // 跳到 password-reset.html
+    } else if (type === "recovery" || type === "password_reset") {
+      // 跳转到 password-reset.html
       window.location.href = `password-reset.html?code=${encodeURIComponent(code)}`;
     } else {
-      document.body.innerHTML = "<p>Invalid redirect</p>";
+      document.body.innerHTML = `<p>Invalid redirect<br>Raw hash: ${hash}</p>`;
     }
   </script>
 </body>
