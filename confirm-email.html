@@ -162,8 +162,19 @@
 
     <script>
         // 从 URL 获取确认码
+                // 从 URL 获取确认码
+        let code = null;
+        
+        // 1. 先尝试从 query (?code=xxx)
         const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code') || urlParams.get('token_hash');
+        code = urlParams.get('code') || urlParams.get('token_hash');
+        
+        // 2. 如果 query 没有，再尝试从 hash (#access_token=xxx)
+        if (!code) {
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          code = hashParams.get('access_token') || hashParams.get('code');
+        }
+
         
         // 构建应用链接
         const appLink = `fluentgo://auth/confirm-email?code=${code}`;
@@ -229,3 +240,4 @@
     </script>
 </body>
 </html>
+
