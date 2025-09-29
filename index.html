@@ -7,24 +7,26 @@
 <body>
   <p>Redirecting...</p>
   <script>
-    // Supabase 把参数放在 hash (#) 部分
-    const hash = window.location.hash.substring(1); 
-    const params = new URLSearchParams(hash);
+    function redirect() {
+      // 先查 query (?code=xxx)
+      const queryParams = new URLSearchParams(window.location.search);
+      let code = queryParams.get("code");
 
-    // 可能存在的参数
-    const type = params.get("type") || params.get("event");
-    const accessToken = params.get("access_token");
-    const code = params.get("code") || accessToken;
+      // 再查 hash (#access_token=xxx)
+      if (!code) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        code = hashParams.get("code") || hashParams.get("access_token");
+      }
 
-    if (type === "signup" || type === "confirmation") {
-      // 跳转到 confirm-email.html
-      window.location.href = `confirm-email.html?code=${encodeURIComponent(code)}`;
-    } else if (type === "recovery" || type === "password_reset") {
-      // 跳转到 password-reset.html
-      window.location.href = `password-reset.html?code=${encodeURIComponent(code)}`;
-    } else {
-      document.body.innerHTML = `<p>Invalid redirect<br>Raw hash: ${hash}</p>`;
+      if (code) {
+        // 跳转 confirm-email.html 并把 code 带过去
+        window.location.replace(`confirm-email.html?code=${encodeURIComponent(code)}`);
+      } else {
+        document.body.innerHTML = "<p>Invalid redirect: no code found.</p>";
+      }
     }
+
+    redirect();
   </script>
 </body>
 </html>
