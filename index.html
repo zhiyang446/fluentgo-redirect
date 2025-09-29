@@ -3,24 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <title>FluentGo Redirect</title>
-  <script>
-    // 获取 URL 参数
-    const params = new URLSearchParams(window.location.search);
-    const type = params.get("type");
-    const code = params.get("code");
-
-    if (type === "signup") {
-      // 跳转到确认邮箱页面
-      window.location.href = `confirm-email.html?code=${code}&type=${type}`;
-    } else if (type === "recovery") {
-      // 跳转到重置密码页面
-      window.location.href = `password-reset.html?code=${code}&type=${type}`;
-    } else {
-      document.body.innerHTML = "<h2>Invalid redirect link</h2>";
-    }
-  </script>
 </head>
 <body>
-  <h2>Redirecting...</h2>
+  <p>Redirecting...</p>
+  <script>
+    // Supabase 默认把参数放在 hash (#) 里
+    const hash = window.location.hash.substring(1); 
+    const params = new URLSearchParams(hash);
+
+    const type = params.get("type");
+    const code = params.get("access_token") || params.get("code");
+
+    if (type === "signup") {
+      // 跳到 confirm-email.html 并把参数带过去
+      window.location.href = `confirm-email.html?code=${encodeURIComponent(code)}`;
+    } else if (type === "recovery") {
+      // 跳到 password-reset.html
+      window.location.href = `password-reset.html?code=${encodeURIComponent(code)}`;
+    } else {
+      document.body.innerHTML = "<p>Invalid redirect</p>";
+    }
+  </script>
 </body>
 </html>
